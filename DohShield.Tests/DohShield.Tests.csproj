@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- net8.0（非 windows）讓測試可在 macOS 執行 -->
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>DohShield</RootNamespace>
+  </PropertyGroup>
+
+  <!-- 直接 include 可攜式核心原始碼（不引用 WPF 主專案） -->
+  <ItemGroup>
+    <Compile Include="../DohShield/Core/Dns/Constants.cs"/>
+    <Compile Include="../DohShield/Core/Dns/DnsCacheEntry.cs"/>
+    <Compile Include="../DohShield/Core/Dns/DnsCache.cs"/>
+    <Compile Include="../DohShield/Core/Dns/DnsPacketParser.cs"/>
+    <Compile Include="../DohShield/Core/Dns/CircuitBreaker.cs"/>
+    <Compile Include="../DohShield/Core/Dns/DohResolver.cs"/>
+    <Compile Include="../DohShield/Core/Network/DohServerConfig.cs"/>
+    <Compile Include="../DohShield/Core/Network/DohClient.cs"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="xunit" Version="2.*"/>
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.*"/>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.*"/>
+  </ItemGroup>
+
+</Project>

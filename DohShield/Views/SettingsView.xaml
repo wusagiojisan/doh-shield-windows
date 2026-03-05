@@ -1,0 +1,84 @@
+<UserControl x:Class="DohShield.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource SurfaceBrush}">
+  <ScrollViewer VerticalScrollBarVisibility="Auto">
+    <StackPanel Margin="20">
+
+      <!-- 伺服器選擇卡片 -->
+      <Border Style="{StaticResource CardStyle}" Margin="0,0,0,16">
+        <StackPanel>
+          <TextBlock Text="DoH 伺服器" FontSize="14" FontWeight="SemiBold"
+                     Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,12"/>
+
+          <!-- 預設伺服器：ListBox 以 SelectedValue/SelectedValuePath 繫結，
+               ItemContainerStyle 讓每個 item 以 RadioButton 顯示 -->
+          <ListBox ItemsSource="{Binding Presets}"
+                   SelectedValue="{Binding SelectedServerId}"
+                   SelectedValuePath="Id"
+                   BorderThickness="0"
+                   Background="Transparent"
+                   Focusable="False">
+            <ListBox.ItemContainerStyle>
+              <Style TargetType="ListBoxItem">
+                <Setter Property="Focusable" Value="False"/>
+                <Setter Property="Template">
+                  <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                      <RadioButton Margin="0,4"
+                                   GroupName="DoHServer"
+                                   IsChecked="{Binding IsSelected,
+                                               RelativeSource={RelativeSource TemplatedParent}}">
+                        <TextBlock Text="{Binding Name}" FontSize="13" Margin="4,0"/>
+                      </RadioButton>
+                    </ControlTemplate>
+                  </Setter.Value>
+                </Setter>
+              </Style>
+            </ListBox.ItemContainerStyle>
+          </ListBox>
+
+          <!-- 自訂伺服器 -->
+          <RadioButton GroupName="DoHServer" Margin="0,4"
+                       IsChecked="{Binding IsCustomSelected}">
+            <TextBlock Text="自訂伺服器" FontSize="13" Margin="4,0"/>
+          </RadioButton>
+
+          <!-- 自訂 URL 輸入框 -->
+          <Border Margin="20,4,0,0"
+                  Visibility="{Binding IsCustomSelected, Converter={StaticResource BoolToVisConverter}}">
+            <TextBox Text="{Binding CustomServerUrl, UpdateSourceTrigger=PropertyChanged}"
+                     Padding="8,6" FontSize="13"
+                     BorderBrush="#BDBDBD" BorderThickness="1"
+                     ToolTip="https://your-doh-server.example/dns-query"/>
+          </Border>
+        </StackPanel>
+      </Border>
+
+      <!-- 儲存按鈕 + 狀態 -->
+      <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+        <Button Content="儲存設定" Command="{Binding SaveCommand}"
+                Style="{StaticResource PrimaryButtonStyle}" Width="100" Margin="0,0,12,0"/>
+        <TextBlock Text="{Binding SaveStatus}" VerticalAlignment="Center" FontSize="13"
+                   Foreground="{StaticResource TextSecondaryBrush}"/>
+      </StackPanel>
+
+      <!-- 說明文字 -->
+      <Border Style="{StaticResource CardStyle}" Background="#E3F2FD">
+        <StackPanel>
+          <TextBlock Text="使用說明" FontWeight="SemiBold" Margin="0,0,0,8"/>
+          <TextBlock TextWrapping="Wrap" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" LineHeight="20">
+            <Run>• DOH Shield 需要以管理員身份執行</Run>
+            <LineBreak/>
+            <Run>• 啟動攔截後，所有 DNS 查詢（UDP port 53）都會透過 DoH 加密</Run>
+            <LineBreak/>
+            <Run>• 更改伺服器後，下次啟動攔截時生效</Run>
+            <LineBreak/>
+            <Run>• WinDivert.dll 和 WinDivert64.sys 需放在程式同目錄</Run>
+          </TextBlock>
+        </StackPanel>
+      </Border>
+
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

@@ -1,0 +1,58 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <SelfContained>true</SelfContained>
+    <!-- macOS / Linux 上 cross-compile Windows Desktop（WPF/WinForms）所需 -->
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>DohShield</AssemblyName>
+    <RootNamespace>DohShield</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <!-- Single-file publish：所有 managed DLL 打包進 exe，只剩 native 檔案需要同目錄 -->
+    <PublishSingleFile>true</PublishSingleFile>
+    <!-- native DLL 不能打包進 single file，仍需同目錄：e_sqlite3.dll, WinDivert.dll, WinDivert64.sys -->
+    <IncludeNativeLibrariesForSelfExtract>false</IncludeNativeLibrariesForSelfExtract>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.*" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.*" />
+    <!-- WPF-native system tray（不需要 WinForms） -->
+    <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="2.*" />
+  </ItemGroup>
+
+  <!-- WinDivert native binaries：用 Target 在 AfterPublish 複製，確保跨平台相容 -->
+  <Target Name="CopyWinDivertNative" AfterTargets="Publish">
+    <Copy
+      SourceFiles="Resources/native/WinDivert.dll"
+      DestinationFolder="$(PublishDir)"
+      Condition="Exists('Resources/native/WinDivert.dll')"
+      SkipUnchangedFiles="true" />
+    <Copy
+      SourceFiles="Resources/native/WinDivert64.sys"
+      DestinationFolder="$(PublishDir)"
+      Condition="Exists('Resources/native/WinDivert64.sys')"
+      SkipUnchangedFiles="true" />
+  </Target>
+
+  <!-- 正常 build 時也複製到輸出目錄 -->
+  <Target Name="CopyWinDivertNativeBuild" AfterTargets="Build">
+    <Copy
+      SourceFiles="Resources/native/WinDivert.dll"
+      DestinationFolder="$(OutputPath)"
+      Condition="Exists('Resources/native/WinDivert.dll')"
+      SkipUnchangedFiles="true" />
+    <Copy
+      SourceFiles="Resources/native/WinDivert64.sys"
+      DestinationFolder="$(OutputPath)"
+      Condition="Exists('Resources/native/WinDivert64.sys')"
+      SkipUnchangedFiles="true" />
+  </Target>
+
+</Project>
